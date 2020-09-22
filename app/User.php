@@ -38,23 +38,4 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function reciever()
-    {
-        return $this->hasOne(\App\FriendRequest::class, 'sender_id')->where(['reciever_id' => auth()->id()]);
-    }
-
-    public function sender()
-    {
-        return $this->hasOne(\App\FriendRequest::class, 'reciever_id')->where(['sender_id' => auth()->id()]);
-    }
-
-    public function friendRequest()
-    {
-        return $this->sender->merge($this->reciever);
-    }
-
-    public function getIsRequestSentAttribute()
-    {
-
-    }
 }
