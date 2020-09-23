@@ -55,21 +55,23 @@ class AuthController extends Controller
         ],200)->header('Content-Type', 'application/json');
     }
 
-    public function logout(Request $request)
+    public function profile(Request $request)
     {
-        $request->user()->token()->revoke();
+        $user = Auth::user();
         return response()->json([
-            'message' => 'Successfully logged out'
+            'data'    => $user->with('profile')->get(),
+            'message' => 'Success'
         ]);
     }
 
     public function register(Request $request){
       $validator = Validator::make($request->all(), [
                     'email'        =>'required|unique:users',
-                    'first_name'   =>'required',
-                    'last_name'    =>'required',
+                    'password'     => 'min:6|same:password_confirmation',
+                    'country'      =>'required',
+                    'zip_code'     =>'required',
                     'phone_number' =>'required',
-                    'password'     =>'required',
+                    'budget'       =>'required',
                   ],
                   ['email.unique'=>'Email Address already registered please sign in using credentials or click forgot password to reset.']
                 );
@@ -86,17 +88,30 @@ class AuthController extends Controller
       }
 
       $user = User::create([
-              'first_name'    => strtolower($request->first_name),
-              'last_name'     => strtolower($request->last_name),
               'phone_number'  => strtolower($request->phone_number),
               'email'         => strtolower($request->email),
               'password'      => Hash::make($request->password),
       ]);
 
+      $user->profile()->create([
+          'phone_number' => $request->phone_number,
+          'country'      => $request->country,
+          'zip_code'     => $request->zip_code,
+          'budget'       => $request->budget,
+      ]);
+
       return response ([
           'success'   => true,
           'message'   => 'Account Created',
-          'user_data' => $user,
+          'user_data' => $user->with('profile')->get(),
         ],200)->header('Content-Type', 'application/json');
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->token()->revoke();
+        return response()->json([
+            'message' => 'Successfully logged out'
+        ]);
     }
 }
