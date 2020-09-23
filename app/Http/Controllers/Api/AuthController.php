@@ -6,23 +6,35 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $rules = [
-          'email'      => 'required|string|email',
-          'password'   => 'required|string',
-        ];
+      $validator = Validator::make($request->all(), [
+                    'email'       =>'required|email',
+                    'password'  =>'required'
+                  ],
+                );
 
-        $request->validate($rules);
+      if ($validator->fails()) {
+          $errors = array();
+          foreach ($validator->messages()->all() as $message){
+            array_push($errors,$message);
+          }
+          return response([
+              'success' => false,
+              'errors' => $errors
+            ], 200)->header('Content-Type', 'application/json');
+      }
+
         $credentials = request(['email', 'password']);
 
         if(!Auth::attempt($credentials)) {
           return response()->json([
             'message' => 'Unauthorized',
-          ], 401);
+          ], 401)->header('Content-Type', 'application/json');
         }
 
         $user        = $request->user();
@@ -37,7 +49,7 @@ class AuthController extends Controller
             'expires_at'   => Carbon::parse(
                 $tokenResult->token->expires_at
             )->toDateTimeString()
-        ]);
+        ],200)->header('Content-Type', 'application/json');
     }
 
     public function logout(Request $request)
