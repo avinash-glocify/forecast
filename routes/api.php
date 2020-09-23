@@ -8,7 +8,7 @@ Route::Post('login', 'Api\AuthController@login');
 Route::Post('register', 'Api\AuthController@register');
 
 Route::group(['middleware' => 'auth:api'], function() {
-    Route::get('profile', 'Api\AuthController@profile');
+    Route::get('profile', 'Api\ProfileController@profile');
     // Route::get('logout', 'Api\AuthController@logout');
     // Route::get('users', 'Api\UserController@getAllUser');
     // Route::get('users/{id}', 'Api\UserController@getUser');
