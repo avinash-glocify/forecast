@@ -55,8 +55,17 @@ class AuthController extends Controller
         ],200)->header('Content-Type', 'application/json');
     }
 
+    public function profile(Request $request)
+    {
+        $user = Auth::user();
+        return response()->json([
+            'data'    => $user->with('profile')->get(),
+            'message' => 'Success'
+        ]);
+    }
 
-    public function register(Request $request){
+    public function register(Request $request)
+    {
       $validator = Validator::make($request->all(), [
                     'email'        =>'required|unique:users',
                     'password'     => 'min:6|same:password_confirmation',
@@ -66,7 +75,7 @@ class AuthController extends Controller
                     'budget'       =>'required',
                   ],
                   ['email.unique'=>'Email Address already registered please sign in using credentials or click forgot password to reset.']
-      );
+                );
 
       if ($validator->fails()) {
           $errors = array();
