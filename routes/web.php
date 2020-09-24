@@ -20,4 +20,4 @@ Route::get('/', function () {
 Route::get('reset-password-success', 'HomeController@success');
 
 
-Auth::routes();
+Auth::routes(['register' => false]);
