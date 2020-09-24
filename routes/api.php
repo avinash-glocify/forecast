@@ -12,6 +12,7 @@ Route::get('terms', 'HomeController@terms');
 
 Route::group(['middleware' => 'auth:api'], function() {
     Route::get('profile', 'Api\ProfileController@profile');
+    Route::post('profile-update', 'Api\ProfileController@update');
     // Route::get('logout', 'Api\AuthController@logout');
     // Route::get('users', 'Api\UserController@getAllUser');
     // Route::get('users/{id}', 'Api\UserController@getUser');
