@@ -25,7 +25,7 @@ class CreateProfilesTable extends Migration
             $table->longText('address')->nullable();
             $table->longText('country');
             $table->char('zip_code');
-            $table->integer('budget');
+            $table->bigInteger('budget');
             $table->timestamps();
         });
     }
