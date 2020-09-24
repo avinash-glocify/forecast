@@ -16,3 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return phpinfo();
 });
+
+Route::get('reset-password-success', 'HomeController@success');
+
+
+Auth::routes();
