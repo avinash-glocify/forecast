@@ -21,7 +21,7 @@ class CreateProfilesTable extends Migration
             $table->char('last_name')->nullable();
             $table->char('city')->nullable();
             $table->char('state')->nullable();
-            $table->integer('phone_number')->nullable();
+            $table->bigInteger('phone_number')->nullable();
             $table->longText('address')->nullable();
             $table->longText('country');
             $table->char('zip_code');
