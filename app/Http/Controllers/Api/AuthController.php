@@ -102,10 +102,12 @@ class AuthController extends Controller
           'budget'       => $request->budget,
       ]);
 
+      $userDetail        = $user->profile;
+      $userDetail->email = $user->email;
       return response ([
           'success'   => true,
           'message'   => 'Account Created',
-          'user_data' => ['user' => $user, 'profile' => $user->profile()->first()],
+          'user_data' => $userDetail,
         ],200)->header('Content-Type', 'application/json');
     }
 
