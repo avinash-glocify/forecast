@@ -105,7 +105,7 @@ class AuthController extends Controller
       return response ([
           'success'   => true,
           'message'   => 'Account Created',
-          'user_data' => [$user, $user->profile()->first()],
+          'user_data' => ['user' => $user, 'profile' => $user->profile()->first()],
         ],200)->header('Content-Type', 'application/json');
     }
 
