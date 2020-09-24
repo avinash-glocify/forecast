@@ -119,9 +119,10 @@ class AuthController extends Controller
 
     public function forgotPassword(Request $request)
     {
-      $input = $request->all();
-      $rules = ['email' => "required|email"];
-      $validator = Validator::make($input, $rules);
+      $input      = $request->all();
+      $rules      = ['email' => "required|email"];
+      $validator  = Validator::make($input, $rules);
+      $arr        = [];
 
       if ($validator->fails()) {
           $arr = array("status" => 400, "message" => $validator->errors()->first(), "data" => array());
