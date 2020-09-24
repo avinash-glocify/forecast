@@ -16,8 +16,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return phpinfo();
 });
+Route::get('/login', function () {
+    return phpinfo();
+});
 
 Route::get('reset-password-success', 'HomeController@success');
 
 
-Auth::routes(['register' => false]);
+Auth::routes(['register' => false, 'login' => false]);
