@@ -39,7 +39,7 @@ class ExpenseController extends Controller
 
         return response ([
             'success'   => true,
-            'message'   => 'Expense Created Successfully',
+            'message'   => 'Expense Fetched Successfully',
             'data'      => $expens,
           ],200)->header('Content-Type', 'application/json');
     }
@@ -51,7 +51,7 @@ class ExpenseController extends Controller
 
         return response ([
             'success'   => true,
-            'message'   => 'Expense Created Successfully',
+            'message'   => 'Expense Fetched Successfully',
             'data'      => $expenses,
           ],200)->header('Content-Type', 'application/json');
     }
