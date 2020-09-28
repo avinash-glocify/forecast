@@ -48,6 +48,8 @@ class AuthController extends Controller
 
 
         return response()->json([
+            'success'      => true,
+            'message'      => 'Successfully Logged In',
             'access_token' => $tokenResult->accessToken,
             'token_type'   => 'Bearer',
             'expires_at'   => Carbon::parse(

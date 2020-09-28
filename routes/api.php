@@ -15,6 +15,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::post('profile-update', 'Api\ProfileController@update');
     Route::post('add_expense ', 'Api\ExpenseController@create');
     Route::get('expenses ', 'Api\ExpenseController@list');
+    Route::get('expenses/{month} ', 'Api\ExpenseController@listByMonth');
     // Route::get('logout', 'Api\AuthController@logout');
     // Route::get('users', 'Api\UserController@getAllUser');
     // Route::get('users/{id}', 'Api\UserController@getUser');
