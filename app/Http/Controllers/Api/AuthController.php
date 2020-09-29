@@ -62,6 +62,7 @@ class AuthController extends Controller
     {
         $user = Auth::user();
         return response()->json([
+            'success' => true,
             'data'    => $user->with('profile')->get(),
             'message' => 'Success'
         ]);
@@ -117,6 +118,7 @@ class AuthController extends Controller
     {
         $request->user()->token()->revoke();
         return response()->json([
+            'success' => true,
             'message' => 'Successfully logged out'
         ]);
     }
@@ -129,7 +131,7 @@ class AuthController extends Controller
       $arr        = [];
 
       if ($validator->fails()) {
-          $arr = array("status" => 400, "message" => $validator->errors()->first(), "data" => array());
+          $arr = ["status" => 400,'success' => true, "message" => $validator->errors()->first(), "data" => array()];
       } else {
           try {
               $response = Password::sendResetLink($request->only('email'), function (Message $message) {
@@ -137,14 +139,23 @@ class AuthController extends Controller
               });
               switch ($response) {
                   case Password::RESET_LINK_SENT:
-                      return \Response::json(array("status" => 200, "message" => trans($response), "data" => array()));
+                      return \Response::json(array("status" => 200,'success' => true, "message" => trans($response), "data" => array()));
                   case Password::INVALID_USER:
-                      return \Response::json(array("status" => 400, "message" => trans($response), "data" => array()));
+                      return \Response::json(array("status" => 400,'success' => true, "message" => trans($response), "data" => array()));
               }
           } catch (\Swift_TransportException $ex) {
-              $arr = array("status" => 400, "message" => $ex->getMessage(), "data" => []);
+            $arr = [
+              'status' => 400,
+              'success' => true,
+              "message" => $ex->getMessage()
+            ];
           } catch (Exception $ex) {
-              $arr = array("status" => 400, "message" => $ex->getMessage(), "data" => []);
+            $arr = [
+              'status' => 400,
+              'success' => true,
+              "message" => $ex->getMessage()
+            ];
+
           }
       }
       return \Response::json($arr);
@@ -163,9 +174,9 @@ class AuthController extends Controller
         });
 
         if ($reset_password_status == Password::INVALID_TOKEN) {
-            return response()->json(["msg" => "Invalid token provided"], 400);
+            return response()->json(['success' => true,"message" => "Invalid token provided"], 400);
         }
 
-        return response()->json(["msg" => "Password has been successfully changed"]);
+        return response()->json(['success' => true, "message" => "Password has been successfully changed"]);
     }
 }
