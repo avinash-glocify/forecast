@@ -61,11 +61,17 @@ class ExpenseController extends Controller
 
     public function listByMonth($month)
     {
-        $user     = Auth::user();
-        $month    = $month ?? '2020-09';
+        $user       = Auth::user();
+        $month      = $month ?? '2020-09';
+        $date       = explode('-', $month);
+        $searchDate = date('Y-m',strtotime($month));
+
+        if(count($date) == 3) {
+          $searchDate = date('Y-m-d',strtotime($month));
+        }
         $expenses = Expanse::where([
             ['user_id','=', $user->id],
-            ['start_time','LIKE','%'.date('Y-m',strtotime($month)).'%'],
+            ['start_time','LIKE','%'.$searchDate.'%'],
           ])->get();
 
         return response ([
