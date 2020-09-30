@@ -37,9 +37,7 @@ class ExpenseController extends Controller
 
         $schedule = Expanse::schedule($request->duration);
 
-        echo "<pre>"; print_r($schedule); die;
         $request->request->add(['user_id' => $user->id, 'scheduled_on' => $schedule]);
-
         $expens = Expanse::create($request->only('user_id','type','price','duration','start_time','description','scheduled_on'));
 
         return response ([
