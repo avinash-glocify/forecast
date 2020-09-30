@@ -8,7 +8,7 @@ use Carbon\Carbon;
 class Expanse extends Model
 {
     protected $fillable = ['type', 'price', 'description', 'duration','start_time','user_id','seen', 'scheduled_on'];
-    protected $appends = array('expense_type', 'duration_type');
+    protected $appends  = ['expense_type', 'duration_type'];
 
     public $expenseType = [
         '1' => 'Income',
@@ -35,7 +35,6 @@ class Expanse extends Model
 
     public static function schedule($duration)
     {
-
        $durationExpense = [
           '1' => 'One-Time',
           '2' => 'Weekely',
