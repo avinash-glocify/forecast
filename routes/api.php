@@ -17,6 +17,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('expenses ', 'Api\ExpenseController@list');
     Route::get('expenses/{month} ', 'Api\ExpenseController@listByMonth');
     Route::post('reset-password', 'Api\AuthController@changePassword');
+    Route::get('notification-list', 'Api\HomeController@notificationList');
     // Route::get('logout', 'Api\AuthController@logout');
     // Route::get('users', 'Api\UserController@getAllUser');
     // Route::get('users/{id}', 'Api\UserController@getUser');

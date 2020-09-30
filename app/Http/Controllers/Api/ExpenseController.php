@@ -7,13 +7,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Model\Expanse;
 use Auth;
-use DB;
+use DB,Carbon\Carbon;
 class ExpenseController extends Controller
 {
     public function create(Request $request)
     {
         $user     = Auth::user();
-        $rules = [
+
+        $rules    = [
           'type'       => 'required',
           'price'      => 'required|integer',
           'duration'   => 'required',
@@ -34,8 +35,12 @@ class ExpenseController extends Controller
               ], 200)->header('Content-Type', 'application/json');
         }
 
-        $request->request->add(['user_id' => $user->id]);
-        $expens = Expanse::create($request->only('user_id','type','price','duration','start_time','description'));
+        $schedule = Expanse::schedule($request->duration);
+
+        echo "<pre>"; print_r($schedule); die;
+        $request->request->add(['user_id' => $user->id, 'scheduled_on' => $schedule]);
+
+        $expens = Expanse::create($request->only('user_id','type','price','duration','start_time','description','scheduled_on'));
 
         return response ([
             'success'   => true,

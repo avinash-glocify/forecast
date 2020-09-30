@@ -3,29 +3,45 @@
 namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Expanse extends Model
 {
-    protected $fillable = ['type', 'price', 'description', 'duration','start_time','user_id'];
+    protected $fillable = ['type', 'price', 'description', 'duration','start_time','user_id','seen', 'scheduled_on'];
 
     public $expenseType = [
         '1' => 'Income',
         '2' => 'Expense',
     ];
 
-    public $duration = [
+    public $durationExpense = [
         '1' => 'One-Time',
         '2' => 'Weekely',
         '3' => 'Bi-Weekely',
         '4' => 'Monthly',
     ];
 
-    public function getTypeAttribute($value)
+
+    public static function schedule($duration)
     {
-        return $this->expenseType[$value];
-    }
-    public function getDurationAttribute($value)
-    {
-        return $this->duration[$value];
+
+       $durationExpense = [
+          '1' => 'One-Time',
+          '2' => 'Weekely',
+          '3' => 'Bi-Weekely',
+          '4' => 'Monthly',
+        ];
+
+        $scheduledType = $durationExpense[$duration];
+        $schedule      = Carbon::now();
+
+        if($scheduledType == 'Monthly') {
+          $schedule  = $schedule->addMonths(1);
+        } elseif($scheduledType == 'Bi-Weekely'){
+          $schedule  = $schedule->addDays(15);
+        } elseif($scheduledType == 'Weekely'){
+          $schedule  = $schedule->addDays(7);
+        }
+        return $schedule;
     }
 }

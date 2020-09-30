@@ -20,6 +20,8 @@ class CreateExpansesTable extends Migration
             $table->date('start_time')->nullable();
             $table->bigInteger('price')->nullable();
             $table->integer('duration')->nullable();
+            $table->timestamp('scheduled_on')->nullable();
+            $table->integer('seen')->default(0);
             $table->longText('description')->nullable();
             $table->timestamps();
         });
