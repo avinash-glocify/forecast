@@ -74,4 +74,16 @@ class ExpenseController extends Controller
             'data'      => $expenses,
           ],200)->header('Content-Type', 'application/json');
     }
+
+    public function notificationList()
+    {
+        $user     = Auth::user();
+        $expenses = Expanse::whereDate('scheduled_on', date('Y-m-d'))->get();
+
+        return response ([
+            'success'   => true,
+            'message'   => 'Expense Fetched Successfully',
+            'data'      => $expenses,
+          ],200)->header('Content-Type', 'application/json');
+    }
 }
