@@ -83,13 +83,36 @@ class ExpenseController extends Controller
 
     public function notificationList()
     {
-        $user     = Auth::user();
-        $expenses = Expanse::whereDate('scheduled_on', date('Y-m-d'))->get();
+        $user          = Auth::user();
+        $notifications = [];
+        $now           = Carbon::now();
+        // $expenses = Expanse::whereDate('scheduled_on', date('Y-m-d'))
+        $expenses = Expanse::where(['user_id' => $user->id, 'seen' => 0])
+                            ->get();
+
+        foreach ($expenses as $key => $expens) {
+          $schedule = Carbon::parse($expens->scheduled_on);
+          $diff     = $schedule->diffInDays($now);
+
+          if($diff == 1) {
+            $message = $expens->expense_type == 'Income' ? 'You got paid today' : 'Your Payment is due in '.$diff. ' days';
+          } elseif($diff == 7) {
+            $message  = $expens->expense_type == 'Income' ? 'You get paid in 1 week' : 'Your Payment is due in 1 week';
+          } else {
+            $message  = $expens->expense_type == 'Income' ? 'You get paid in '.$diff. ' days' : 'Your Payment is due in '.$diff. ' days';
+          }
+
+          $notifications[$key] = [
+            'id'      => $expens->id,
+            'type'    => $expens->expense_type,
+            'message' => $message
+          ];
+        }
 
         return response ([
             'success'   => true,
-            'message'   => 'Expense Fetched Successfully',
-            'data'      => $expenses,
+            'message'   => 'Notifications Fetched Successfully',
+            'data'      => $notifications,
           ],200)->header('Content-Type', 'application/json');
     }
 }
