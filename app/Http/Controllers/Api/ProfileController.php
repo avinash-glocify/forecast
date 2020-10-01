@@ -12,9 +12,10 @@ class ProfileController extends Controller
     public function profile(Request $request)
     {
         $user = Auth::user();
+        $user->profile = $user->profile();
         return response()->json([
             'success' => true,
-            'data'    => $user->with('profile')->get(),
+            'data'    => $user,
             'message' => 'Success'
         ]);
     }
