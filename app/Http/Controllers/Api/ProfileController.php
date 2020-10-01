@@ -13,6 +13,7 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         return response()->json([
+            'success' => true,
             'data'    => $user->with('profile')->get(),
             'message' => 'Success'
         ]);
