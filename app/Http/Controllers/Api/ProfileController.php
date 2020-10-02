@@ -43,6 +43,7 @@ class ProfileController extends Controller
         $user->profile()->update(array_filter($profileData));
         $user->profile = $user->profile;
         return response()->json([
+            'success' => true,
             'data'    => $user,
             'message' => 'Your account has been updated!'
         ]);
