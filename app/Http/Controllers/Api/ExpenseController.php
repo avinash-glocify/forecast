@@ -92,9 +92,10 @@ class ExpenseController extends Controller
         $notifications = [];
         $now           = Carbon::now();
         $expenses = Expanse::where(['user_id' => $user->id, 'seen' => 0])
-                            ->where('seen_at', '!=', date('Y-m-d'))
-                            ->orWhereNull('seen_at')
-                            ->get();
+                            ->where(function($query) {
+                                $query->where('seen_at', '!=', date('Y-m-d'));
+                                $query->orWhereNull('seen_at');
+                            })->get();
         foreach ($expenses as $key => $expens) {
           $schedule = Carbon::parse($expens->scheduled_on);
           $diff     = $schedule->diffInDays($now);
