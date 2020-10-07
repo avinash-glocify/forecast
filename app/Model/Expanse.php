@@ -7,7 +7,7 @@ use Carbon\Carbon;
 
 class Expanse extends Model
 {
-    protected $fillable = ['type', 'price', 'description', 'duration','start_time','user_id','seen', 'scheduled_on'];
+    protected $fillable = ['type', 'price', 'description', 'duration','start_time','user_id','seen', 'scheduled_on','seen_at'];
     protected $appends  = ['expense_type', 'duration_type'];
 
     public $expenseType = [

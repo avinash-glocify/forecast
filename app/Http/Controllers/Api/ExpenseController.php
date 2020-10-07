@@ -37,8 +37,8 @@ class ExpenseController extends Controller
 
         $schedule = Expanse::schedule($request->duration);
 
-        $request->request->add(['user_id' => $user->id, 'scheduled_on' => $schedule]);
-        $expens = Expanse::create($request->only('user_id','type','price','duration','start_time','description','scheduled_on'));
+        $request->request->add(['user_id' => $user->id, 'scheduled_on' => $schedule, 'seen_at' => date('Y-m-d')]);
+        $expens = Expanse::create($request->only('user_id','type','price','duration','start_time','description','scheduled_on','seen_at'));
 
         return response ([
             'success'   => true,
@@ -86,10 +86,10 @@ class ExpenseController extends Controller
         $user          = Auth::user();
         $notifications = [];
         $now           = Carbon::now();
-        // $expenses = Expanse::whereDate('scheduled_on', date('Y-m-d'))
         $expenses = Expanse::where(['user_id' => $user->id, 'seen' => 0])
+                            ->where('seen_at', '!=', date('Y-m-d'))
+                            ->orWhereNull('seen_at')
                             ->get();
-
         foreach ($expenses as $key => $expens) {
           $schedule = Carbon::parse($expens->scheduled_on);
           $diff     = $schedule->diffInDays($now);
@@ -114,5 +114,43 @@ class ExpenseController extends Controller
             'message'   => 'Notifications Fetched Successfully',
             'data'      => $notifications,
           ],200)->header('Content-Type', 'application/json');
+    }
+
+    public function removeNotification($id)
+    {
+       $expense = Expanse::find($id);
+       if($expense) {
+         $today = Carbon::now()->format('Y-m-d');
+         $expense->seen_at = $today;
+         $expense->save();
+
+         return response ([
+             'success'   => true,
+             'message'   => 'Notifications Removed Successfully',
+           ],200)->header('Content-Type', 'application/json');
+       }
+
+       return response ([
+           'success'   => false,
+           'message'   => 'Notifications not Found',
+         ],200)->header('Content-Type', 'application/json');
+    }
+
+    public function removeExpanse($id)
+    {
+       $expense = Expanse::find($id);
+
+       if($expense) {
+         $expense->delete();
+         return response ([
+             'success'   => true,
+             'message'   => 'Transaction Removed Successfully',
+           ],200)->header('Content-Type', 'application/json');
+       }
+
+       return response ([
+           'success'   => false,
+           'message'   => 'Transaction not Found',
+         ],200)->header('Content-Type', 'application/json');
     }
 }

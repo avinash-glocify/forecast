@@ -17,6 +17,9 @@ class ExpenseNotifications extends Command
 
         foreach ($expenses as $key => $expense) {
           $schedule = Expanse::schedule($expense->duration);
+          $expense->seen = 1;
+          $expense->save();
+
           $expense  = $expense::create([
             'user_id'      => $expense->user_id,
             'type'         => $expense->type,
