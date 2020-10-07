@@ -23,6 +23,7 @@ class ExpenseNotifications extends Command
           $expense  = $expense::create([
             'user_id'      => $expense->user_id,
             'type'         => $expense->type,
+            'price'        => $expense->price,
             'start_time'   => $expense->start_time,
             'duration'     => $expense->duration,
             'scheduled_on' => $schedule

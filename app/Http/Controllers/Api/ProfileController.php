@@ -41,9 +41,10 @@ class ProfileController extends Controller
         $profileData = $request->only('dob','first_name','last_name','city','state','phone_number', 'address', 'country','zip_code','budget');
 
         $user->profile()->update(array_filter($profileData));
-
+        $user->profile = $user->profile;
         return response()->json([
-            'data'    => $user->with('profile')->get(),
+            'success' => true,
+            'data'    => $user,
             'message' => 'Your account has been updated!'
         ]);
     }

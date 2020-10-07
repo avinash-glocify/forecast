@@ -68,11 +68,16 @@ class ExpenseController extends Controller
 
         if(count($date) == 3) {
           $searchDate = date('Y-m-d',strtotime($month));
-        }
+          $expenses = Expanse::where([
+            ['user_id','=', $user->id],
+            ['start_time','<=', $searchDate],
+          ])->get();
+        } else {
         $expenses = Expanse::where([
             ['user_id','=', $user->id],
-            ['start_time','LIKE','%'.$searchDate.'%'],
+            ['start_time','LIKE','%'.date('Y-m',strtotime($month)).'%'],
           ])->get();
+        }
 
         return response ([
             'success'   => true,
