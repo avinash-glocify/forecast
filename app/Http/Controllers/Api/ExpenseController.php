@@ -86,29 +86,31 @@ class ExpenseController extends Controller
           ],200)->header('Content-Type', 'application/json');
     }
 
-    public function forecastAmount()
+    public function forecastAmount($date)
     {
         $user        = Auth::user();
         $expense     = new Expanse();
         $types       = array_flip($expense->expenseType);
-        $incomeType  = $types['Income'] ?? 2;
-        $expanseType = $types['Expense'] ?? 1;
+        $incomeType  = $types['Income'];
+        $expanseType = $types['Expense'];
 
         $expense = Expanse::where(['user_id' => $user->id, 'type' => $expanseType])
+                            ->whereDate('created_at', '<=', date('Y-m-d',strtotime($date)))
                             ->pluck('price')->sum();
 
         $income  = Expanse::where(['user_id' => $user->id, 'type' => $incomeType])
+                            ->whereDate('created_at', '<=', date('Y-m-d',strtotime($date)))
                             ->pluck('price')->sum();
 
         $data  = [
           'income'         => $income,
-          'expense'        => $expense,
+          'expanse'        => $expense,
           'forecastAmount' => $income - $expense
         ];
 
         return response ([
             'success'   => true,
-            'message'   => 'Forecast Amount Fetched Successfully',
+            'message'   => 'Expense Fetched Successfully',
             'data'      => $data,
           ],200)->header('Content-Type', 'application/json');
     }
