@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Model\Expanse;
+use App\User;
 use Auth;
 use DB,Carbon\Carbon;
 class ExpenseController extends Controller
@@ -94,6 +95,9 @@ class ExpenseController extends Controller
         $incomeType  = $types['Income'];
         $expanseType = $types['Expense'];
 
+        $profile      = $user->profile;
+        $budget       = $profile->budget ?? '';
+
         $expense = Expanse::where(['user_id' => $user->id, 'type' => $expanseType])
                             ->whereDate('created_at', '<=', date('Y-m-d',strtotime($date)))
                             ->pluck('price')->sum();
@@ -105,7 +109,7 @@ class ExpenseController extends Controller
         $data  = [
           'income'         => $income,
           'expanse'        => $expense,
-          'forecastAmount' => $income - $expense
+          'forecastAmount' => $budget + ($income - $expense)
         ];
 
         return response ([
