@@ -109,6 +109,7 @@ class ExpenseController extends Controller
         $data  = [
           'income'         => $income,
           'expanse'        => $expense,
+          'budget'         => $budget,
           'forecastAmount' => $budget + ($income - $expense)
         ];
 
