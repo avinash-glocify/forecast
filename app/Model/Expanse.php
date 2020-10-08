@@ -17,8 +17,8 @@ class Expanse extends Model
 
     public $durationExpense = [
         '1' => 'One-Time',
-        '2' => 'Weekely',
-        '3' => 'Bi-Weekely',
+        '2' => 'Weekly',
+        '3' => 'Bi-Weekly',
         '4' => 'Monthly',
     ];
 
