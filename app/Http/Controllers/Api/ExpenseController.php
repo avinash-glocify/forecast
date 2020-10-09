@@ -90,23 +90,83 @@ class ExpenseController extends Controller
     public function forecastAmount($date)
     {
         $user        = Auth::user();
+
+        if($user) {
+          $expense     = new Expanse();
+          $types       = array_flip($expense->expenseType);
+          $incomeType  = $types['Income'];
+          $expanseType = $types['Expense'];
+
+          $profile     = $user->profile;
+          $budget      = $profile->budget ?? '';
+
+          $expenseQuery         = Expanse::where(['user_id' => $user->id, 'type' => $expanseType]);
+
+          $expensePreviousQuery = clone $expenseQuery;
+
+          $expensePrevious      = $expensePreviousQuery
+          ->whereDate('scheduled_on', '<=', date('Y-m-d',strtotime($date)))
+          ->pluck('price')->sum();
+
+          $expense               = $expenseQuery
+          ->whereDate('scheduled_on', date('Y-m-d',strtotime($date)))
+          ->pluck('price')->sum();
+
+          $incomeQuery           = Expanse::where(['user_id' => $user->id, 'type' => $incomeType]);
+          $previousIncomeQuery   = clone $incomeQuery;
+
+          $previousIncome        = $previousIncomeQuery
+          ->whereDate('scheduled_on', '<=', date('Y-m-d',strtotime($date)))
+          ->pluck('price')->sum();
+
+          $income                 = $incomeQuery
+          ->whereDate('scheduled_on', date('Y-m-d',strtotime($date)))
+          ->pluck('price')->sum();
+
+          $data  = [
+            'income'         => $income,
+            'expanse'        => $expense,
+            'budget'         => $budget,
+            'forecastAmount' => $budget + ($previousIncome - $expensePrevious)
+          ];
+
+          return response ([
+            'success'   => true,
+            'message'   => 'Expense Fetched Successfully',
+            'data'      => $data,
+          ],200)->header('Content-Type', 'application/json');
+        }
+
+        return response ([
+          'success'   => false,
+          'message'   => 'User Not Found',
+          'data'      => $data,
+        ],200)->header('Content-Type', 'application/json');
+    }
+
+
+    public function getSpecificUserForecastAmount($id,$date)
+    {
+        $user        = User::find($id);
         $expense     = new Expanse();
         $types       = array_flip($expense->expenseType);
         $incomeType  = $types['Income'];
         $expanseType = $types['Expense'];
 
-        $profile      = $user->profile;
-        $budget       = $profile->budget ?? '';
+        $profile     = $user->profile;
+        $budget      = $profile->budget ?? '';
 
         $expenseQuery         = Expanse::where(['user_id' => $user->id, 'type' => $expanseType]);
 
         $expensePreviousQuery = clone $expenseQuery;
 
         $expensePrevious      = $expensePreviousQuery
+                                  ->whereDate('start_time', '>=', date('Y-m-d'))
                                   ->whereDate('scheduled_on', '<=', date('Y-m-d',strtotime($date)))
                                   ->pluck('price')->sum();
 
         $expense               = $expenseQuery
+                                   ->whereDate('start_time', '>=', date('Y-m-d'))
                                    ->whereDate('scheduled_on', date('Y-m-d',strtotime($date)))
                                    ->pluck('price')->sum();
 
@@ -114,10 +174,12 @@ class ExpenseController extends Controller
         $previousIncomeQuery   = clone $incomeQuery;
 
         $previousIncome        = $previousIncomeQuery
+                                  ->whereDate('start_time', '>=', date('Y-m-d'))
                                   ->whereDate('scheduled_on', '<=', date('Y-m-d',strtotime($date)))
                                   ->pluck('price')->sum();
 
         $income                 = $incomeQuery
+                                  ->whereDate('start_time', '>=', date('Y-m-d'))
                                   ->whereDate('scheduled_on', date('Y-m-d',strtotime($date)))
                                   ->pluck('price')->sum();
 
