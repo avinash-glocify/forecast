@@ -36,7 +36,8 @@ class ExpenseController extends Controller
               ], 200)->header('Content-Type', 'application/json');
         }
 
-        $schedule = Expanse::schedule($request->duration);
+        // $schedule = Expanse::schedule($request->duration);
+        $schedule = Carbon::now();
 
         $request->request->add(['user_id' => $user->id, 'scheduled_on' => $schedule, 'seen_at' => date('Y-m-d')]);
         $expens = Expanse::create($request->only('user_id','type','price','duration','start_time','description','scheduled_on','seen_at'));
