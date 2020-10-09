@@ -71,12 +71,13 @@ class ExpenseController extends Controller
           $searchDate = date('Y-m-d',strtotime($month));
           $expenses = Expanse::where([
             ['user_id','=', $user->id],
-            ['scheduled_on', $searchDate],
-          ])->get();
+          ])
+          ->whereDate('scheduled_on', date('Y-m-d',strtotime($searchDate)))
+          ->get();
         } else {
         $expenses = Expanse::where([
             ['user_id','=', $user->id],
-            ['scheduled_on','LIKE','%'.date('Y-m',strtotime($month)).'%'],
+            ['start_time','LIKE','%'.date('Y-m',strtotime($month)).'%'],
           ])->get();
         }
 
