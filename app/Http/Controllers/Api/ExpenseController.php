@@ -148,6 +148,7 @@ class ExpenseController extends Controller
     public function getSpecificUserForecastAmount($id,$date)
     {
         $user        = User::find($id);
+        $token       = Auth::user();
         $expense     = new Expanse();
         $types       = array_flip($expense->expenseType);
         $incomeType  = $types['Income'];
@@ -190,6 +191,7 @@ class ExpenseController extends Controller
             'success'   => true,
             'message'   => 'Expense Fetched Successfully',
             'data'      => $data,
+            'user'      => $token,
           ],200)->header('Content-Type', 'application/json');
     }
 
