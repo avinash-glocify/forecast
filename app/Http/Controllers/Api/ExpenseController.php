@@ -122,7 +122,6 @@ class ExpenseController extends Controller
           $income                 = $incomeQuery
           ->whereDate('scheduled_on', date('Y-m-d',strtotime($date)))
           ->pluck('price')->sum();
-
           $data  = [
             'income'         => $income,
             'expanse'        => $expense,
@@ -161,12 +160,10 @@ class ExpenseController extends Controller
         $expensePreviousQuery = clone $expenseQuery;
 
         $expensePrevious      = $expensePreviousQuery
-                                  ->whereDate('start_time', '>=', date('Y-m-d'))
                                   ->whereDate('scheduled_on', '<=', date('Y-m-d',strtotime($date)))
                                   ->pluck('price')->sum();
 
         $expense               = $expenseQuery
-                                   ->whereDate('start_time', '>=', date('Y-m-d'))
                                    ->whereDate('scheduled_on', date('Y-m-d',strtotime($date)))
                                    ->pluck('price')->sum();
 
@@ -174,12 +171,10 @@ class ExpenseController extends Controller
         $previousIncomeQuery   = clone $incomeQuery;
 
         $previousIncome        = $previousIncomeQuery
-                                  ->whereDate('start_time', '>=', date('Y-m-d'))
                                   ->whereDate('scheduled_on', '<=', date('Y-m-d',strtotime($date)))
                                   ->pluck('price')->sum();
 
         $income                 = $incomeQuery
-                                  ->whereDate('start_time', '>=', date('Y-m-d'))
                                   ->whereDate('scheduled_on', date('Y-m-d',strtotime($date)))
                                   ->pluck('price')->sum();
 
