@@ -103,22 +103,22 @@ class ExpenseController extends Controller
         $expensePreviousQuery = clone $expenseQuery;
 
         $expensePrevious      = $expensePreviousQuery
-                                  ->whereDate('created_at', '<=', date('Y-m-d',strtotime($date)))
+                                  ->whereDate('scheduled_on', '<=', date('Y-m-d',strtotime($date)))
                                   ->pluck('price')->sum();
 
         $expense               = $expenseQuery
-                                   ->whereDate('created_at', date('Y-m-d',strtotime($date)))
+                                   ->whereDate('scheduled_on', date('Y-m-d',strtotime($date)))
                                    ->pluck('price')->sum();
 
         $incomeQuery           = Expanse::where(['user_id' => $user->id, 'type' => $incomeType]);
         $previousIncomeQuery   = clone $incomeQuery;
 
         $previousIncome        = $previousIncomeQuery
-                                  ->whereDate('created_at', '<=', date('Y-m-d',strtotime($date)))
+                                  ->whereDate('scheduled_on', '<=', date('Y-m-d',strtotime($date)))
                                   ->pluck('price')->sum();
 
         $income                 = $incomeQuery
-                                  ->whereDate('created_at', date('Y-m-d',strtotime($date)))
+                                  ->whereDate('scheduled_on', date('Y-m-d',strtotime($date)))
                                   ->pluck('price')->sum();
 
         $data  = [
