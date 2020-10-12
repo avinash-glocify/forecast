@@ -15,6 +15,7 @@ class AddSeenAtColumnToExapnseTable extends Migration
     {
         Schema::table('expanses', function (Blueprint $table) {
             $table->date('seen_at')->nullable()->after('seen');
+            $table->date('end_time')->nullable()->after('seen_at');
         });
     }
 

@@ -22,7 +22,6 @@ class ExpenseController extends Controller
           'start_time' => 'required|date',
         ];
 
-
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -39,7 +38,7 @@ class ExpenseController extends Controller
         $schduleDate = Carbon::parse($request->start_time);
 
         $request->request->add(['user_id' => $user->id, 'scheduled_on' => $schduleDate, 'seen_at' => date('Y-m-d')]);
-        $expens = Expanse::create($request->only('user_id','type','price','duration','start_time','description','scheduled_on','seen_at'));
+        $expens = Expanse::create($request->only('user_id','type','price','duration','start_time','description','scheduled_on','seen_at', 'end_time'));
 
         return response ([
             'success'   => true,
@@ -93,41 +92,73 @@ class ExpenseController extends Controller
         $user        = Auth::user();
 
         if($user) {
-          $expense     = new Expanse();
-          $types       = array_flip($expense->expenseType);
-          $incomeType  = $types['Income'];
-          $expanseType = $types['Expense'];
+          $expense         = new Expanse();
+          $types           = array_flip($expense->expenseType);
+          $incomeType      = $types['Income'];
+          $expanseType     = $types['Expense'];
+          $durationExpense = $expense->durationExpense;
 
-          $profile     = $user->profile;
-          $budget      = $profile->budget ?? '';
+          $profile         = $user->profile;
+          $budget          = $profile->budget ?? '';
 
-          $expenseQuery         = Expanse::where(['user_id' => $user->id, 'type' => $expanseType]);
+          $expenseQuery    = Expanse::where(['user_id' => $user->id])
+                                    ->orderBy('id', 'desc')
+                                    ->get();
 
-          $expensePreviousQuery = clone $expenseQuery;
+          $expansePreviousAmount = 0;
+          $incomePreviousAmount  = 0;
+          $income                = 0;
+          $expense               = 0;
+          $expenseTra            = 0;
+          $incomeTra             = 0;
 
-          $expensePrevious      = $expensePreviousQuery
-          ->whereDate('scheduled_on', '<=', date('Y-m-d',strtotime($date)))
-          ->pluck('price')->sum();
+          foreach ($expenseQuery as $key => $expanse) {
 
-          $expense               = $expenseQuery
-          ->whereDate('scheduled_on', date('Y-m-d',strtotime($date)))
-          ->pluck('price')->sum();
+            $date = strtotime($date) > strtotime($expanse->end_time) ? $expanse->end_time : $date;
+            if(strtotime($expanse->start_time) <= strtotime($date)) {
+              $endTime     = $expanse->end_time;
+              $searchDate  = Carbon::parse($date);
+              $startTime   = Carbon::parse($expanse->start_time);
+              $diffInDays  = $searchDate->diffInDays($startTime);
+              $duration    = $durationExpense[$expanse->duration];
+              $period      = $duration == 'Monthly' ? 31 : ($duration == 'Weekly' ? 7 : ($duration == 'Bi-Weekly' ? 15 : 1) );
+              $circle      = 1;
+              $searchTrans = false;
 
-          $incomeQuery           = Expanse::where(['user_id' => $user->id, 'type' => $incomeType]);
-          $previousIncomeQuery   = clone $incomeQuery;
+              if($duration != 'One-Time') {
+                if($period < $diffInDays) {
+                  $mode   = fmod($diffInDays, $period);
+                  $cal    = intdiv($diffInDays, $period);
+                  if($mode >= 0) {
+                    $circle  = $cal+1;
+                    if($mode == 0) {
+                      $searchTrans = true;
+                    }
+                  }
+                }
+              }
 
-          $previousIncome        = $previousIncomeQuery
-          ->whereDate('scheduled_on', '<=', date('Y-m-d',strtotime($date)))
-          ->pluck('price')->sum();
+              if($expanse->type == 1) {
+                $income                = $searchTrans ? $expanse->price : 0;
+                $incomePreviousAmount  = $incomePreviousAmount+($circle*$expanse->price);
+                $incomeTra             = $incomeTra+$circle;
+              } else {
+                $expenseTra            = $expenseTra+$circle;
+                $expense               = $searchTrans ? $expanse->price : 0;
+                $expansePreviousAmount = $expansePreviousAmount+($circle*$expanse->price);
+              }
+            }
+          }
 
-          $income                 = $incomeQuery
-          ->whereDate('scheduled_on', date('Y-m-d',strtotime($date)))
-          ->pluck('price')->sum();
           $data  = [
-            'income'         => $income,
-            'expanse'        => $expense,
-            'budget'         => $budget,
-            'forecastAmount' => $budget + ($previousIncome - $expensePrevious)
+            'income'           => $income,
+            'expanse'          => $expense,
+            'budget'           => $budget,
+            'previous_income'  => $incomePreviousAmount,
+            'income_trans'     => $incomeTra,
+            'expense_trans'    => $expenseTra,
+            'previous_expense' => $expansePreviousAmount,
+            'forecastAmount'   => $budget + ($incomePreviousAmount - $expansePreviousAmount)
           ];
 
           return response ([
@@ -136,12 +167,6 @@ class ExpenseController extends Controller
             'data'      => $data,
           ],200)->header('Content-Type', 'application/json');
         }
-
-        return response ([
-          'success'   => false,
-          'message'   => 'User Not Found',
-          'data'      => $data,
-        ],200)->header('Content-Type', 'application/json');
     }
 
 
