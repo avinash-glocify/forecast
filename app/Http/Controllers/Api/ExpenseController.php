@@ -154,12 +154,12 @@ class ExpenseController extends Controller
             'income'           => $income,
             'expanse'          => $expense,
             'budget'           => $budget,
-            'previous_income'  => $incomePreviousAmount,
             'income_trans'     => $incomeTra,
             'expense_trans'    => $expenseTra,
-            'previous_expense' => $expansePreviousAmount,
             'forecastAmount'   => $budget + ($incomePreviousAmount - $expansePreviousAmount)
           ];
+          // 'previous_income'  => $incomePreviousAmount,
+          // 'previous_expense' => $expansePreviousAmount,
 
           return response ([
             'success'   => true,
