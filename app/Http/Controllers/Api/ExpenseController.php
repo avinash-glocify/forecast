@@ -107,7 +107,7 @@ class ExpenseController extends Controller
 
           $expansePreviousAmount = 0;
           $incomePreviousAmount  = 0;
-          $income                = 0;
+          $income               = 0;
           $expense               = 0;
           $expenseTra            = 0;
           $incomeTra             = 0;
@@ -126,7 +126,7 @@ class ExpenseController extends Controller
               $searchTrans = false;
 
               if($duration != 'One-Time') {
-                if($period < $diffInDays) {
+                if($period <= $diffInDays) {
                   $mode   = fmod($diffInDays, $period);
                   $cal    = intdiv($diffInDays, $period);
                   if($mode >= 0) {
@@ -135,16 +135,25 @@ class ExpenseController extends Controller
                       $searchTrans = true;
                     }
                   }
+                } else {
+                  if(strtotime($expanse->start_time) == strtotime($date)) {
+                    $searchTrans = true;
+                  }
                 }
               }
 
               if($expanse->type == 1) {
-                $income                = $searchTrans ? $expanse->price : 0;
+                if($searchTrans) {
+                  $income          = $expanse->price;
+
+                }
                 $incomePreviousAmount  = $incomePreviousAmount+($circle*$expanse->price);
                 $incomeTra             = $incomeTra+$circle;
               } else {
+                if($searchTrans) {
+                  $expense   = $expanse->price;
+                }
                 $expenseTra            = $expenseTra+$circle;
-                $expense               = $searchTrans ? $expanse->price : 0;
                 $expansePreviousAmount = $expansePreviousAmount+($circle*$expanse->price);
               }
             }
@@ -154,10 +163,10 @@ class ExpenseController extends Controller
             'income'           => $income,
             'expanse'          => $expense,
             'budget'           => $budget,
-            'income_trans'     => $incomeTra,
-            'expense_trans'    => $expenseTra,
             'forecastAmount'   => $budget + ($incomePreviousAmount - $expansePreviousAmount)
           ];
+          // 'income_trans'     => $incomeTra,
+          // 'expense_trans'    => $expenseTra,
           // 'previous_income'  => $incomePreviousAmount,
           // 'previous_expense' => $expansePreviousAmount,
 
@@ -168,7 +177,6 @@ class ExpenseController extends Controller
           ],200)->header('Content-Type', 'application/json');
         }
     }
-
 
     public function getSpecificUserForecastAmount($id,$date)
     {
