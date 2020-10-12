@@ -135,11 +135,10 @@ class ExpenseController extends Controller
                       $searchTrans = true;
                     }
                   }
-                } else {
-                  if(strtotime($expanse->start_time) == strtotime($date)) {
-                    $searchTrans = true;
-                  }
                 }
+              }
+              if(strtotime($expanse->start_time) == strtotime($date)) {
+                $searchTrans = true;
               }
 
               if($expanse->type == 1) {
